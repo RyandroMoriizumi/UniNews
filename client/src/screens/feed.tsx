@@ -16,7 +16,7 @@ export function Feed() {
 
     const fetchNews = async (url: string) => {
         try {
-            const response = await axios.get(`http://192.168.0.108:8080/npm/${encodeURIComponent(url)}`);
+            const response = await axios.get(`http://200.145.153.212:8080/npm/${encodeURIComponent(url)}`);
             return response.data.items;
         } catch (error) {
             console.error('Error fetching news:', error);
@@ -25,6 +25,23 @@ export function Feed() {
         }
     };
 
+    const fetchUniversityUrls = async (name: string) => {
+        try {
+            const response = await axios.get(`http://200.145.153.212:8080/university/name/${encodeURIComponent(name)}`);
+            if (response.data && response.data.length > 0) {
+                return response.data.map((university: { url: string }) => university.url);
+            } else {
+                Alert.alert('Erro', 'Nenhuma universidade encontrada.');
+                return [];
+            }
+        } catch (error) {
+            console.error('Error fetching university URLs:', error);
+            Alert.alert('Erro', 'Erro ao buscar URLs das universidades.');
+            return [];
+        }
+    };
+    
+
     const handleUniversityNameChange = debounce(async (name: string) => {
         try {
             if (!name.trim()) {
@@ -32,9 +49,19 @@ export function Feed() {
                 return;
             }
             setLoading(true);
-            const url = 'https://jornal.usp.br/feed/'; // Replace this with dynamic URL input if needed
-            const fetchedNews = await fetchNews(url);
-            setNews(fetchedNews);
+    
+            // Obtenha as URLs das universidades com base no nome
+            const universityUrls = await fetchUniversityUrls(name);
+    
+            if (universityUrls.length > 0) {
+                // Busque as notícias usando as URLs das universidades
+                const newsPromises = universityUrls.map((url: string) => fetchNews(url));
+                const newsResults = await Promise.all(newsPromises);
+                const allNews = newsResults.flat();
+                setNews(allNews);
+            } else {
+                setNews([]);
+            }
         } catch (error) {
             console.error('Error fetching news:', error);
             Alert.alert('Erro', 'Erro ao buscar notícias.');
@@ -42,7 +69,8 @@ export function Feed() {
             setLoading(false);
         }
     }, 500);
-
+    
+    
     return (
         <>
             <Header />
