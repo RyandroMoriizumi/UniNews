@@ -7,13 +7,16 @@ import { CrudUsuario } from './src/screens/crudUsuarioScreen';
 import { useColorScheme } from 'react-native';
 import { ThemeProvider } from 'styled-components';
 import themes from './src/theme';
-import Login from './src/screens/loginScreen';
-import {perfilUniversidade as PfUni} from './src/screens/perfilUniversidade';
-import {Feed} from './src/screens/feed';
-import lerNoticia from './src/screens/lerNoticia';
-import {CrudUniversidade} from './src/screens/crudUniversidade';
-import {Perfil} from './src/screens/perfil';
-import Temas from './src/screens/tema';
+import { Login } from './src/screens/loginScreen';
+import { PerfilUniversidade } from './src/screens/perfilUniversidade';
+import { Pesquisar } from './src/screens/pesquisa';
+import { Feed } from './src/screens/feed';
+import { LerNoticia } from './src/screens/lerNoticia';
+import { CrudUniversidade } from './src/screens/crudUniversidade';
+import { Perfil } from './src/screens/perfil';
+import { Temas }  from './src/screens/tema';
+import { TempLerNoticia } from './src/screens/tempLerNoticia';
+import  Teste  from './src/screens/teste';
 
 const Stack = createStackNavigator();
 
@@ -24,14 +27,14 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="PerfilUniversidade">
-          
+        <Stack.Navigator initialRouteName="Feed">
+         {
         <Stack.Screen
             name="Perfil"
             component={Perfil}
             options={{ headerShown: false }}
           />
-          <Stack.Screen
+         }<Stack.Screen
             name="Temas"
             component={Temas}
             options={{ headerShown: false }}
@@ -52,13 +55,13 @@ export default function App() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="feed"
+            name="Feed"
             component={Feed}
             options={{ headerShown: false }}
           />
           <Stack.Screen
             name="LerNoticia"
-            component={lerNoticia}
+            component={LerNoticia}
             options={{ headerShown: false }}
           />
           <Stack.Screen
@@ -68,7 +71,17 @@ export default function App() {
           />
           <Stack.Screen
             name="PerfilUniversidade"
-            component={PfUni}
+            component={PerfilUniversidade}
+            options={{ headerShown: false }}
+          />
+          {/* <Stack.Screen
+            name="Pesquisar"
+            component={Psq}
+            options={{ headerShown: false }}
+        />*/}
+          <Stack.Screen
+            name="teste"
+            component={Teste}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>
