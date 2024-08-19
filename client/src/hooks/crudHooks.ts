@@ -22,13 +22,13 @@ export const useCrud = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await getUsers();
+      const res = await getUsers(user.role);
       setUsers(res.data);
     } catch (err) {
       console.error('Erro ao mostrar', err);
     }
 
-    getUsers()
+    getUsers(user.role)
       .then((res) => setUsers(res.data))
       .catch((err) => console.error('Erro ao mostrar', err));
   };

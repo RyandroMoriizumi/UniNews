@@ -1,4 +1,4 @@
-import  React, {useState} from 'react';
+import  React, {useState, useRef} from 'react';
 
 import { Animated, View, StyleSheet, Text, TouchableOpacity, Dimensions, TextInput, Image } from 'react-native';
 import {
@@ -25,13 +25,15 @@ const Drawer: React.FC<DrawerProps> = ({ isOpen, toggleDrawer }) => {
 
   // Get the width of the screen
   const screenWidth = Dimensions.get('window').width;
+  const textInputRef = useRef<TextInput>(null);
+
 
   // Define drawer width as a fraction of the screen width (e.g., 70% of the screen width)
   const drawerWidth = screenWidth * 0.85;
 
   
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [textValue, setTextValue] = useState<string>('');
+  const [textValue, setTextValue] = useState<string>('Ryandro');
   
   React.useEffect(() => {
     Animated.timing(drawerTranslateX, {
@@ -61,6 +63,7 @@ const Drawer: React.FC<DrawerProps> = ({ isOpen, toggleDrawer }) => {
         <Text>Nome de usuário</Text>
         {isEditing ? (
           <TextInput
+            ref={textInputRef} 
             style={styles.input}
             placeholder="Nome do usuário"
             placeholderTextColor={'#8F8F8F'}
@@ -69,14 +72,14 @@ const Drawer: React.FC<DrawerProps> = ({ isOpen, toggleDrawer }) => {
             onBlur={() => setIsEditing(false)} // Switch back to button mode on blur
           />
         ) : (
-          <TouchableOpacity onPress={() => setIsEditing(true)}>
-         
-         <Image
-              source={Icon}
-              style={styles.icon} 
-              
-            />
-          <Text style={styles.input}>{textValue || ''}</Text>
+          <TouchableOpacity style={styles.campo}  onPress={() => setIsEditing(true)}>
+            <Text style={styles.input}>{textValue || ''}</Text>
+            <Image
+                  source={Icon}
+                  style={styles.icon} 
+                  
+                />
+          
           </TouchableOpacity>
         )}
       </View>
@@ -117,15 +120,19 @@ const styles = StyleSheet.create({
     padding:10,
   },
   input:{
-    color:'red'
+    color:'#000',
+    marginRight:'5%'
   },
   titulo:{
     color:'#0571D3',
     fontSize:17
   },
   icon:{
-    width:'10%',
-    height:'31%'
+    width:'7%',
+    height:'100%'
+  },
+  campo:{
+    flexDirection:'row'
   }
   
 });

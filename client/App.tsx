@@ -15,6 +15,7 @@ import { LerNoticia } from './src/screens/lerNoticia';
 import { CrudUniversidade } from './src/screens/crudUniversidade';
 import { Perfil } from './src/screens/perfil';
 import { Temas }  from './src/screens/tema';
+import { TempLerNoticia } from './src/screens/tempLerNoticia';
 import  Teste  from './src/screens/teste';
 
 const Stack = createStackNavigator();
@@ -26,7 +27,7 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Feed">
+        <Stack.Navigator initialRouteName="teste">
          {
         <Stack.Screen
             name="Perfil"
@@ -75,7 +76,7 @@ export default function App() {
           />
           {/* <Stack.Screen
             name="Pesquisar"
-            component={Pesquisar}
+            component={Psq}
             options={{ headerShown: false }}
         />*/}
           <Stack.Screen
