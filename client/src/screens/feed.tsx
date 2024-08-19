@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, ScrollView, Pressable, Image, Text, Alert, Linking } from 'react-native';
+import { View, TextInput, ScrollView, Pressable, Image, Text, Alert } from 'react-native';
 import { styles } from '@styles/styleFeed';
 import { ThemeNews } from '../components/addTheme/theme';
 import { Header } from '@components/addHeader/header';
@@ -8,16 +8,27 @@ import { Footer } from '../components/addFooter/footer';
 import debounce from 'lodash.debounce';
 import axios from 'axios';
 import { format } from 'date-fns';
+import { useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../@types/navigation'; // Importe os tipos de navegação
+import { StackNavigationProp } from '@react-navigation/stack';
+
+type FeedNavigationProp = StackNavigationProp<RootStackParamList, 'Feed'>;
 
 export function Feed() {
     const [universityName, setUniversityName] = useState('');
     const [news, setNews] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const navigation = useNavigation<FeedNavigationProp>(); // Utilize os tipos
+
+    const BASE_URL = 'http://192.168.0.108:8080';
 
     const fetchNews = async (url: string) => {
         try {
-            const response = await axios.get(`http://200.145.153.212:8080/npm/${encodeURIComponent(url)}`);
-            return response.data.items;
+            const response = await axios.get(`${BASE_URL}/npm/${encodeURIComponent(url)}`);
+            return response.data.items.map((item: any) => ({
+                ...item,
+                image: extractImageFromDescription(item.description)
+            }));
         } catch (error) {
             console.error('Error fetching news:', error);
             Alert.alert('Erro', 'Erro ao buscar notícias.');
@@ -25,9 +36,14 @@ export function Feed() {
         }
     };
 
+    const extractImageFromDescription = (description: string) => {
+        const match = description.match(/<img[^>]+src="([^">]+)"/);
+        return match ? match[1] : '';
+    };
+
     const fetchUniversityUrls = async (name: string) => {
         try {
-            const response = await axios.get(`http://200.145.153.212:8080/university/name/${encodeURIComponent(name)}`);
+            const response = await axios.get(`${BASE_URL}/university/name/${encodeURIComponent(name)}`);
             if (response.data && response.data.length > 0) {
                 return response.data.map((university: { url: string }) => university.url);
             } else {
@@ -40,7 +56,6 @@ export function Feed() {
             return [];
         }
     };
-    
 
     const handleUniversityNameChange = debounce(async (name: string) => {
         try {
@@ -49,12 +64,10 @@ export function Feed() {
                 return;
             }
             setLoading(true);
-    
-            // Obtenha as URLs das universidades com base no nome
+
             const universityUrls = await fetchUniversityUrls(name);
-    
+
             if (universityUrls.length > 0) {
-                // Busque as notícias usando as URLs das universidades
                 const newsPromises = universityUrls.map((url: string) => fetchNews(url));
                 const newsResults = await Promise.all(newsPromises);
                 const allNews = newsResults.flat();
@@ -69,8 +82,7 @@ export function Feed() {
             setLoading(false);
         }
     }, 500);
-    
-    
+
     return (
         <>
             <Header />
@@ -96,7 +108,12 @@ export function Feed() {
                     {news.length > 0 && (
                         <ScrollView>
                             {news.map((item, index) => (
-                                <Pressable key={item.id || index} onPress={() => { Linking.openURL(item.link) }}>
+                                <Pressable
+                                    key={item.id || index}
+                                    onPress={() => {
+                                        navigation.navigate('LerNoticia', { noticia: item });
+                                    }}
+                                >
                                     <View style={styles.viewCard}>
                                         <View style={styles.card}>
                                             {item.image ? (
